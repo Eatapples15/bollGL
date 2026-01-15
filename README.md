@@ -1,18 +1,20 @@
-# 🌩️ Sistema Vigilanza Sud Italia
+# 🌩️ Dashboard Monitoraggio Sud Italia
 
-**Data Report:** 15/01/2026 10:15
-**File Sorgente:** `20260114_1439_tomorrow.json`
-**Zone con Allerta:** ✅ Nessuna
+**Aggiornamento:** 15/01/2026 10:19
+**Sorgente:** `20260114_1439_tomorrow.json`
 
-### 📍 CAMPANIA
+### 📍 CAMPANIA (Salerno)
 | Stato | Zona | Criticità |
 |---|---|---|
+| ⚪ | - | Nessun dato trovato |
 
-### 📍 CALABRIA
+### 📍 CALABRIA (Cosenza)
 | Stato | Zona | Criticità |
 |---|---|---|
+| ⚪ | - | Nessun dato trovato |
 
 ### 📍 BASILICATA
 | Stato | Zona | Criticità |
 |---|---|---|
+| ⚪ | - | Nessun dato trovato |
 
