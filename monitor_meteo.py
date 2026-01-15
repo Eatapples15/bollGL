@@ -1,112 +1,98 @@
 import requests
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 import os
 
-class SudAlertUltimaGenerazione:
+class SudAlertPredictive:
     def __init__(self):
-        # Filtri Territoriali
+        # Zone di interesse
         self.zone_salerno = ["3", "5", "6", "7", "8"]
         self.zone_cosenza = ["1", "2"]
         self.zone_basilicata = ["A1", "A2", "B", "C", "D", "E1", "E2"]
         
-        # Repository DPC
-        self.repo_owner = "pcm-dpc"
-        self.repo_name = "DPC-Bollettini-Criticita-Idrogeologica-Idraulica"
-        
-    def get_latest_file_via_commits(self):
-        """
-        Innova: Usa l'API dei Commits per trovare l'ultimo file caricato.
-        Evita il limite dei 1000 file delle API standard.
-        """
-        print(f"[{datetime.now().strftime('%H:%M')}] Ricerca bollettino 2026 tramite Git Commits...")
-        
-        # Chiediamo l'ultimo commit che ha toccato la cartella 'files'
-        api_url = f"https://api.github.com/repos/{self.repo_owner}/{self.repo_name}/commits?path=files&per_page=1"
-        
+        self.repo_raw_base = "https://raw.githubusercontent.com/pcm-dpc/DPC-Bollettini-Criticita-Idrogeologica-Idraulica/master/files/"
+        self.repo_api_commits = "https://api.github.com/repos/pcm-dpc/DPC-Bollettini-Criticita-Idrogeologica-Idraulica/commits?path=files&per_page=5"
+
+    def get_latest_data(self):
+        """Tenta di trovare il file in 3 modi diversi"""
+        print(f"[{datetime.now().strftime('%H:%M')}] Avvio ricerca bollettino 2026...")
+
+        # Metodo 1: Ricerca tramite gli ultimi 5 commits (Più affidabile)
         try:
-            response = requests.get(api_url, timeout=15)
-            response.raise_for_status()
-            last_commit = response.json()[0]
-            
-            # Ora chiediamo i dettagli di quel commit per vedere il nome del file
-            commit_sha = last_commit['sha']
-            detail_url = f"https://api.github.com/repos/{self.repo_owner}/{self.repo_name}/commits/{commit_sha}"
-            detail_res = requests.get(detail_url, timeout=15)
-            files_changed = detail_res.json()['files']
-            
-            # Cerchiamo il file .json nella cartella files
-            for f in files_changed:
-                filename = f['filename']
-                if filename.startswith("files/") and filename.endswith(".json"):
-                    raw_url = f['raw_url']
-                    clean_name = filename.split("/")[-1]
-                    print(f"✅ Trovato Bollettino Attuale: {clean_name}")
-                    return raw_url, clean_name
-                    
+            res = requests.get(self.repo_api_commits, timeout=10)
+            commits = res.json()
+            for commit in commits:
+                sha = commit['sha']
+                detail = requests.get(f"https://api.github.com/repos/pcm-dpc/DPC-Bollettini-Criticita-Idrogeologica-Idraulica/commits/{sha}").json()
+                for f in detail.get('files', []):
+                    fname = f['filename'].split('/')[-1]
+                    if fname.endswith('.json') and fname.startswith('202'):
+                        print(f"✅ Trovato tramite Commit: {fname}")
+                        return requests.get(f['raw_url']).json(), fname
         except Exception as e:
-            print(f"❌ Errore durante la ricerca: {e}")
-            
-        # Fallback estremo: il file 'bollettino.json' che a volte viene aggiornato come link statico
-        print("⚠️ Provo fallback su file statico...")
-        return f"https://raw.githubusercontent.com/{self.repo_owner}/{self.repo_name}/master/bollettino.json", "bollettino.json"
+            print(f"⚠️ Metodo Commits fallito: {e}")
+
+        # Metodo 2: Tentativo predittivo (Oggi e Ieri)
+        # I bollettini sono spesso 20260115_1430.json o 20260115_1500.json
+        for d in [0, 1]:
+            target_date = (datetime.now() - timedelta(days=d)).strftime("%Y%m%d")
+            # Proviamo gli orari di pubblicazione standard (14:30, 15:00, 15:30, 16:00)
+            for hhmm in ["1430", "1500", "1530", "1600", "1630"]:
+                try_url = f"{self.repo_raw_base}{target_date}_{hhmm}.json"
+                r = requests.get(try_url, timeout=5)
+                if r.status_code == 200:
+                    print(f"✅ Trovato tramite Tentativo Predittivo: {target_date}_{hhmm}.json")
+                    return r.json(), f"{target_date}_{hhmm}.json"
+        
+        return None, None
 
     def get_emoji(self, stato):
         mapping = {"VERDE": "🟢", "GIALLA": "🟡", "ARANCIONE": "🟠", "ROSSA": "🔴"}
         return mapping.get(str(stato).upper(), "⚪")
 
     def process(self):
-        raw_url, filename = self.get_latest_file_via_commits()
+        data, filename = self.get_latest_data()
         
-        try:
-            data = requests.get(raw_url).json()
-        except:
-            print("❌ Errore nel download del contenuto JSON.")
+        if not data:
+            print("❌ ERRORE: Impossibile trovare un bollettino valido per ieri o oggi.")
             return
 
         results = {"campania": [], "calabria": [], "basilicata": []}
-        
-        # Generazione Report
-        report = f"# 🌩️ Sistema Vigilanza Sud Italia\n\n"
-        report += f"**Ultimo aggiornamento:** {datetime.now().strftime('%d/%m/%Y %H:%M')}\n"
-        report += f"**File Analizzato:** `{filename}`\n\n"
-        report += "> [!TIP]\n> La mappa sottostante si aggiorna automaticamente in base a questi dati.\n\n"
+        count_alert = 0
 
+        # Parsing dati
         for area in data.get("allerte", []):
-            codice = area.get("codice", "")
+            cod = area.get("codice", "")
             crit = area.get("criticita_idrogeologica", "VERDE")
+            if crit != "VERDE": count_alert += 1
             
-            # CAMPANIA -> SALERNO
-            if "CAM-" in codice:
-                z = codice.split("-")[1]
-                if z in self.zone_salerno:
-                    results["campania"].append({"zona": z, "crit": crit})
-            
-            # CALABRIA -> COSENZA
-            elif "CAL-" in codice:
-                z = codice.split("-")[1]
-                if z in self.zone_cosenza:
-                    results["calabria"].append({"zona": z, "crit": crit})
-            
-            # BASILICATA -> TUTTE
-            elif "BASI-" in codice:
-                z = codice.split("-")[1]
-                if z in self.zone_basilicata:
-                    results["basilicata"].append({"zona": z, "crit": crit})
+            if "CAM-" in cod:
+                z = cod.split("-")[1]
+                if z in self.zone_salerno: results["campania"].append({"zona": z, "crit": crit})
+            elif "CAL-" in cod:
+                z = cod.split("-")[1]
+                if z in self.zone_cosenza: results["calabria"].append({"zona": z, "crit": crit})
+            elif "BASI-" in cod:
+                z = cod.split("-")[1]
+                if z in self.zone_basilicata: results["basilicata"].append({"zona": z, "crit": crit})
 
-        # Costruzione Tabelle README
+        # Generazione Report Markdown
+        report = f"# 🌩️ Sistema Vigilanza Sud Italia\n\n"
+        report += f"**Data Report:** {datetime.now().strftime('%d/%m/%Y %H:%M')}\n"
+        report += f"**File Sorgente:** `{filename}`\n"
+        report += f"**Zone con Allerta:** {'✅ Nessuna' if count_alert == 0 else f'⚠️ {count_alert} aree a rischio'}\n\n"
+
         for reg, items in results.items():
-            if items:
-                report += f"### 📍 {reg.upper()}\n"
-                report += "| Stato | Zona | Criticità |\n|---|---|---|\n"
-                for i in items:
-                    report += f"| {self.get_emoji(i['crit'])} | **{i['zona']}** | {i['crit']} |\n"
-                report += "\n"
+            report += f"### 📍 {reg.upper()}\n"
+            report += "| Stato | Zona | Criticità |\n|---|---|---|\n"
+            for i in items:
+                report += f"| {self.get_emoji(i['crit'])} | **{i['zona']}** | {i['crit']} |\n"
+            report += "\n"
 
         # Salvataggio
         with open("README.md", "w", encoding="utf-8") as f: f.write(report)
         with open("data_mappa.json", "w", encoding="utf-8") as j: json.dump(results, j, indent=4)
-        print(f"🚀 Dashboard aggiornata con successo alle {datetime.now().strftime('%H:%M')}")
+        print(f"🚀 Dashboard aggiornata con {filename}")
 
 if __name__ == "__main__":
-    SudAlertUltimaGenerazione().process()
+    SudAlertPredictive().process()
