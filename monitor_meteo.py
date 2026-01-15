@@ -3,28 +3,29 @@ from datetime import datetime
 import json
 import os
 import time
-import random
 
-class SudAlertForceUpdate:
+class SudAlertOfficialMapping:
     def __init__(self):
-        # Configurazione Target
-        self.targets = {
-            "CAMPANIA": ["3", "5", "6", "7", "8"], # Salerno
-            "CALABRIA": ["1", "2"],              # Cosenza
-            "BASILICATA": ["A1", "A2", "B", "C", "D", "E1", "E2"]
+        # MAPPATURA UFFICIALE DPC 2026
+        self.mapping = {
+            "CAMPANIA": {
+                "3": "PENISOLA SORRENTINO-AMALFITANA, MONTI DI SARNO E MONTI PICENTINI",
+                "5": "TUSCIANO E ALTO SELE",
+                "6": "PIANA SELE E ALTO CILENTO",
+                "7": "TANAGRO",
+                "8": "BASSO CILENTO"
+            },
+            "CALABRIA": {
+                "1": "VERSANTE TIRRENICO SETTENTRIONALE",
+                "2": "VERSANTE TIRRENICO CENTRO-SETTENTRIONALE"
+            }
         }
-        
-        # Keyword per recupero geografico (se il prefisso manca)
-        self.geo_map = {
-            "CAMPANIA": ["(SA)", "SALERNO", "AMALFI", "AGROPOLI", "SAPRI", "EBOLI"],
-            "CALABRIA": ["(CS)", "COSENZA", "PAOLA", "RENDE", "CASTROVILLARI", "ROSSANO"],
-            "BASILICATA": ["(PZ)", "(MT)", "POTENZA", "MATERA"]
-        }
+        # La Basilicata usa prefissi standard (BASI-A1, BASI-B, etc.)
+        self.basilicata_targets = ["A1", "A2", "B", "C", "D", "E1", "E2"]
         
         self.repo_api = "https://api.github.com/repos/pcm-dpc/DPC-Bollettini-Criticita-Idrogeologica-Idraulica/commits?path=files&per_page=5"
 
-    def get_latest_data(self):
-        """Ottiene il link al TopoJSON più recente"""
+    def fetch_data(self):
         try:
             res = requests.get(self.repo_api, timeout=15)
             commits = res.json()
@@ -32,34 +33,15 @@ class SudAlertForceUpdate:
                 detail = requests.get(commit['url']).json()
                 for f in detail.get('files', []):
                     fname = f['filename'].split('/')[-1]
-                    # Cerchiamo l'indice principale o il tomorrow diretto
                     if "tomorrow.json" in fname and "202" in fname:
-                        print(f"✅ File rilevato: {fname}")
+                        print(f"--- ANALISI FILE: {fname} ---")
                         return requests.get(f['raw_url']).json(), fname
         except Exception as e:
-            print(f"❌ Errore critico: {e}")
+            print(f"Errore: {e}")
         return None, None
 
-    def clean_zone(self, text):
-        """Pulisce il nome della zona per estrarre il codice (es. Basi-A1 -> A1)"""
-        t = str(text).upper().replace("ZONA", "").replace("BASI-", "").replace("CAM-", "").replace("CAL-", "").replace("-", "").strip()
-        if t.isdigit(): t = str(int(t))
-        return t
-
-    def identify_region(self, props):
-        """Determina la regione analizzando nome zona e comuni"""
-        name = str(props.get("Nome zona", "")).upper()
-        comuni = str(props.get("Comuni", "")).upper()
-        
-        if "BASI" in name: return "BASILICATA"
-        if "CAM" in name or any(k in comuni for k in self.geo_map["CAMPANIA"]): return "CAMPANIA"
-        if "CAL" in name or any(k in comuni for k in self.geo_map["CALABRIA"]): return "CALABRIA"
-        if any(k in comuni for k in self.geo_map["BASILICATA"]): return "BASILICATA"
-        return "UNKNOWN"
-
     def get_color(self, props):
-        """Estrae il colore basandosi sui testi dello style.json"""
-        # Controlliamo 'Rappresentata nella mappa' o 'Per rischio idrogeologico'
+        # Cerchiamo la criticità idrogeologica (colore mappa)
         txt = str(props.get("Rappresentata nella mappa", props.get("Per rischio idrogeologico", "VERDE"))).upper()
         if "ROSSA" in txt or "ELEVATA" in txt: return "ROSSA"
         if "ARANCIONE" in txt or "MODERATA" in txt: return "ARANCIONE"
@@ -67,54 +49,63 @@ class SudAlertForceUpdate:
         return "VERDE"
 
     def process(self):
-        data, fname = self.get_latest_data()
+        data, fname = self.fetch_data()
         if not data: return
 
         results = {"campania": [], "calabria": [], "basilicata": []}
         
-        # Parsing TopoJSON
+        # Accesso Geometrie TopoJSON
         obj_key = list(data['objects'].keys())[0]
         geometries = data['objects'][obj_key]['geometries']
 
         for geo in geometries:
             p = geo.get("properties", {})
-            region = self.identify_region(p)
-            zone_code = self.clean_zone(p.get("Nome zona", ""))
+            raw_name = str(p.get("Nome zona", "")).upper().strip()
             color = self.get_color(p)
 
-            if region in self.targets:
-                if zone_code in self.targets[region] or region == "BASILICATA":
-                    results[region.lower()].append({"zona": zone_code, "crit": color})
+            # 1. MATCH CAMPANIA (SALERNO)
+            for code, official_name in self.mapping["CAMPANIA"].items():
+                if official_name in raw_name:
+                    results["campania"].append({"zona": code, "crit": color})
 
-        # Deduplicazione
+            # 2. MATCH CALABRIA (COSENZA)
+            for code, official_name in self.mapping["CALABRIA"].items():
+                if official_name in raw_name:
+                    results["calabria"].append({"zona": code, "crit": color})
+
+            # 3. MATCH BASILICATA
+            if "BASI-" in raw_name:
+                clean_b = raw_name.replace("BASI-", "").strip()
+                if clean_b in self.basilicata_targets:
+                    results["basilicata"].append({"zona": clean_b, "crit": color})
+
+        # Deduplicazione e pulizia
         for r in ["campania", "calabria", "basilicata"]:
-            unique = {z['zona']: z['crit'] for z in results[r]}
+            # Usiamo un dizionario per tenere solo l'ultima occorrenza (o la più grave)
+            unique = {}
+            for item in results[r]:
+                unique[item['zona']] = item['crit']
             results[r] = [{"zona": k, "crit": v} for k, v in sorted(unique.items())]
 
-        # INNOVATIVO: Force Update Metadata
-        # Inseriamo un ID unico che cambia ad ogni millisecondo per forzare il push di Git
-        results["force_metadata"] = {
-            "timestamp_ns": time.time_ns(),
-            "update_id": f"REF-{random.randint(1000, 9999)}",
-            "last_check": datetime.now().strftime('%d/%m/%Y %H:%M:%S'),
-            "source": fname
+        # Force Update per GitHub
+        results["metadata"] = {
+            "timestamp": time.time_ns(),
+            "last_update": datetime.now().strftime('%d/%m/%Y %H:%M:%S'),
+            "file_source": fname
         }
 
-        # Scrittura JSON
+        # Salvataggio File
         with open("data_mappa.json", "w", encoding="utf-8") as j:
             json.dump(results, j, indent=4)
         
-        # Scrittura README
-        self.update_readme(results)
-        print(f"🚀 Update completato. SA:{len(results['campania'])} | CS:{len(results['calabria'])} | BASI:{len(results['basilicata'])}")
+        self.write_readme(results)
+        print(f"✅ SA:{len(results['campania'])} | CS:{len(results['calabria'])} | BASI:{len(results['basilicata'])}")
 
-    def update_readme(self, results):
+    def write_readme(self, results):
         now = datetime.now().strftime('%d/%m/%Y %H:%M')
-        meta = results["force_metadata"]
-        
-        report = f"# 🌩️ Monitoraggio Meteo Sud Italia\n\n"
-        report += f"**Stato:** AGGIORNATO | **Update ID:** `{meta['update_id']}`\n"
-        report += f"**Ultima verifica:** {now} | **Sorgente:** `{meta['source']}`\n\n"
+        report = f"# 🌩️ Monitoraggio Sud Italia\n\n"
+        report += f"**Ultimo Aggiornamento:** {now}\n"
+        report += f"**File Analizzato:** `{results['metadata']['file_source']}`\n\n"
         
         emoji = {"VERDE": "🟢", "GIALLA": "🟡", "ARANCIONE": "🟠", "ROSSA": "🔴"}
         
@@ -123,9 +114,9 @@ class SudAlertForceUpdate:
             if r == "campania": title += " (Salerno)"
             elif r == "calabria": title += " (Cosenza)"
             
-            report += f"### 📍 {title}\n| Stato | Zona | Criticità |\n|---|---|---|\n"
+            report += f"### 📍 {title}\n| Stato | Zona | Allerta |\n|---|---|---|\n"
             if not results[r]:
-                report += "| 🟢 | - | Nessuna allerta significativa |\n"
+                report += "| ⚪ | - | Nessun dato trovato |\n"
             else:
                 for item in results[r]:
                     report += f"| {emoji.get(item['crit'], '⚪')} | **{item['zona']}** | {item['crit']} |\n"
@@ -135,4 +126,4 @@ class SudAlertForceUpdate:
             f.write(report)
 
 if __name__ == "__main__":
-    SudAlertForceUpdate().process()
+    SudAlertOfficialMapping().process()
