@@ -1,9 +1,38 @@
 {
     "campania": [],
     "calabria": [],
-    "basilicata": [],
+    "basilicata": [
+        {
+            "zona": "A1",
+            "crit": "VERDE"
+        },
+        {
+            "zona": "A2",
+            "crit": "VERDE"
+        },
+        {
+            "zona": "B",
+            "crit": "VERDE"
+        },
+        {
+            "zona": "C",
+            "crit": "VERDE"
+        },
+        {
+            "zona": "D",
+            "crit": "VERDE"
+        },
+        {
+            "zona": "E1",
+            "crit": "VERDE"
+        },
+        {
+            "zona": "E2",
+            "crit": "VERDE"
+        }
+    ],
     "metadata": {
-        "last_run": "2026-01-15 10:31:47",
+        "last_run": "2026-01-15 10:33:18",
         "source_file": "20260114_1439_tomorrow.json"
     }
 }
