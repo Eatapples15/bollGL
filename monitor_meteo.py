@@ -3,9 +3,9 @@ from datetime import datetime
 import json
 import os
 
-class SudAlertFinal2026:
+class SudAlertFinalMaster:
     def __init__(self):
-        # Filtri precisi
+        # Filtri Territoriali
         self.targets = {
             "CAMPANIA": ["3", "5", "6", "7", "8"], # Salerno
             "CALABRIA": ["1", "2"],              # Cosenza
@@ -13,101 +13,114 @@ class SudAlertFinal2026:
         }
         self.repo_api = "https://api.github.com/repos/pcm-dpc/DPC-Bollettini-Criticita-Idrogeologica-Idraulica/commits?path=files&per_page=5"
 
-    def get_topo_json_url(self):
-        """Trova l'ultimo indice e pesca il link del TopoJSON di domani"""
+    def get_data_from_dpc(self):
+        """Trova i dati cercando sia l'indice che i file diretti"""
         try:
             res = requests.get(self.repo_api, timeout=15)
             commits = res.json()
             for commit in commits:
                 detail = requests.get(commit['url']).json()
-                for f in detail.get('files', []):
+                files = detail.get('files', [])
+                
+                # 1. Cerchiamo prima il TopoJSON di 'tomorrow' (più preciso)
+                for f in files:
                     fname = f['filename'].split('/')[-1]
-                    # Cerchiamo il file indice (es: 20260114_1439.json)
-                    if fname.endswith('.json') and "_" in fname and "tomorrow" not in fname and "style" not in fname:
-                        print(f"✅ Indice trovato: {fname}")
-                        meta_data = requests.get(f['raw_url']).json()
-                        # Estraiamo il link al TopoJSON di domani (vigilanza)
-                        topo_url = meta_data.get("tomorrow", {}).get("topo_json")
-                        return topo_url, fname
+                    if "tomorrow.json" in fname and "202" in fname:
+                        print(f"✅ TopoJSON diretto trovato: {fname}")
+                        return requests.get(f['raw_url']).json(), fname
+
+                # 2. Se non c'è il diretto, cerchiamo l'indice
+                for f in files:
+                    fname = f['filename'].split('/')[-1]
+                    if fname.endswith('.json') and "_" in fname and "style" not in fname and "today" not in fname and "tomorrow" not in fname:
+                        print(f"✅ Indice trovato: {fname}. Estraggo link...")
+                        meta = requests.get(f['raw_url']).json()
+                        topo_url = meta.get("tomorrow", {}).get("topo_json")
+                        if topo_url:
+                            return requests.get(topo_url).json(), fname
         except Exception as e:
-            print(f"❌ Errore ricerca: {e}")
+            print(f"❌ Errore critico: {e}")
         return None, None
 
     def normalize_status(self, val):
-        """Converte i codici numerici o stringa in testo chiaro"""
         s = str(val).upper()
-        if s == "1" or "VERDE" in s: return "VERDE"
-        if s == "2" or "GIALLA" in s: return "GIALLA"
-        if s == "3" or "ARANCIONE" in s: return "ARANCIONE"
-        if s == "4" or "ROSSA" in s: return "ROSSA"
+        if s in ["1", "VERDE"]: return "VERDE"
+        if s in ["2", "GIALLA"]: return "GIALLA"
+        if s in ["3", "ARANCIONE"]: return "ARANCIONE"
+        if s in ["4", "ROSSA"]: return "ROSSA"
         return "VERDE"
 
     def process(self):
-        topo_url, filename = self.get_topo_json_url()
-        if not topo_url:
-            print("❌ Nessun TopoJSON trovato.")
+        data, filename = self.get_data_from_dpc()
+        if not data:
+            print("❌ Impossibile trovare bollettini validi.")
             return
-
-        print(f"📥 Scaricamento dati mappa da: {topo_url}")
-        topo_data = requests.get(topo_url).json()
 
         results = {"campania": [], "calabria": [], "basilicata": []}
         
-        # Nel TopoJSON del DPC, le geometrie sono sotto objects -> bollettino -> geometries
+        # Estrazione Geometrie (TopoJSON standard DPC)
         try:
-            geometries = topo_data['objects']['bollettino']['geometries']
-        except KeyError:
-            # Fallback se la struttura cambia
-            geometries = []
-            print("⚠️ Struttura TopoJSON imprevista.")
-
-        for geo in geometries:
-            p = geo.get("properties", {})
-            raw_code = str(p.get("Codice_Area", "")).upper()
+            # Prova i due rami comuni del TopoJSON DPC
+            items = []
+            if 'objects' in data:
+                key = list(data['objects'].keys())[0]
+                items = data['objects'][key]['geometries']
+            elif 'features' in data:
+                items = data['features']
             
-            # Estrazione criticità idrogeologica
-            crit = self.normalize_status(p.get("Idro", "VERDE"))
+            print(f"Analisi di {len(items)} aree geografiche...")
 
-            # Pulizia codice (es. CAM-03 -> 3)
-            clean_z = raw_code.split("-")[-1] if "-" in raw_code else raw_code
-            if clean_z.isdigit(): clean_z = str(int(clean_z))
+            for item in items:
+                p = item.get("properties", {})
+                # Campi comuni: Codice_Area, Idro, Idra, Stato
+                raw_code = str(p.get("Codice_Area", p.get("codice", ""))).upper()
+                crit = self.normalize_status(p.get("Idro", p.get("Idrogeologica", "VERDE")))
 
-            # Matching Regioni
-            reg = ""
-            if "CAM" in raw_code: reg = "campania"
-            elif "CAL" in raw_code: reg = "calabria"
-            elif "BASI" in raw_code: reg = "basilicata"
+                # Pulizia codice
+                clean_z = raw_code.split("-")[-1] if "-" in raw_code else raw_code
+                if clean_z.isdigit(): clean_z = str(int(clean_z))
 
-            if reg in results:
-                # Filtro Salerno e Cosenza
-                if reg == "campania" and clean_z in self.targets["CAMPANIA"]:
-                    results[reg].append({"zona": clean_z, "crit": crit})
-                elif reg == "calabria" and clean_z in self.targets["CALABRIA"]:
-                    results[reg].append({"zona": clean_z, "crit": crit})
-                elif reg == "basilicata": # Basilicata tutta
-                    results[reg].append({"zona": clean_z, "crit": crit})
+                # Identificazione Regione
+                reg_found = ""
+                if "CAM" in raw_code: reg_found = "campania"
+                elif "CAL" in raw_code: reg_found = "calabria"
+                elif "BASI" in raw_code: reg_found = "basilicata"
+
+                if reg_found in results:
+                    if reg_found == "campania" and clean_z in self.targets["CAMPANIA"]:
+                        results[reg_found].append({"zona": clean_z, "crit": crit})
+                    elif reg_found == "calabria" and clean_z in self.targets["CALABRIA"]:
+                        results[reg_found].append({"zona": clean_z, "crit": crit})
+                    elif reg_found == "basilicata":
+                        results[reg_found].append({"zona": clean_z, "crit": crit})
+
+        except Exception as e:
+            print(f"⚠️ Errore durante il parsing: {e}")
 
         # --- GENERAZIONE REPORT ---
-        report = f"# 🌩️ Monitoraggio Sud Italia\n\n**Analisi Bollettino:** `{filename}`\n"
-        report += f"**Aggiornato al:** {datetime.now().strftime('%d/%m/%Y %H:%M')}\n\n"
+        now_str = datetime.now().strftime('%d/%m/%Y %H:%M')
+        report = f"# 🌩️ Monitoraggio Protezione Civile Sud Italia\n\n"
+        report += f"**Bollettino:** `{filename}`\n"
+        report += f"**Aggiornamento:** {now_str}\n\n"
 
         for r in ["campania", "calabria", "basilicata"]:
             label = "CAMPANIA (Salerno)" if r == "campania" else "CALABRIA (Cosenza)" if r == "calabria" else "BASILICATA"
             report += f"### 📍 {label}\n| Stato | Zona | Criticità |\n|---|---|---|\n"
-            if not results[r]:
-                report += "| 🟢 | - | Nessun fenomeno significativo |\n"
+            
+            # Rimuove duplicati (una zona può avere più poligoni)
+            unique = {z['zona']: z['crit'] for z in results[r]}
+            if not unique:
+                report += "| 🟢 | - | Nessuna allerta |\n"
             else:
-                # Rimuovi duplicati e ordina
-                unique_zones = {z['zona']: z['crit'] for z in results[r]}
-                for z in sorted(unique_zones.keys()):
-                    emoji = {"VERDE": "🟢", "GIALLA": "🟡", "ARANCIONE": "🟠", "ROSSA": "🔴"}.get(unique_zones[z], "⚪")
-                    report += f"| {emoji} | **{z}** | {unique_zones[z]} |\n"
+                for z in sorted(unique.keys()):
+                    emoji = {"VERDE": "🟢", "GIALLA": "🟡", "ARANCIONE": "🟠", "ROSSA": "🔴"}.get(unique[z], "⚪")
+                    report += f"| {emoji} | **{z}** | {unique[z]} |\n"
             report += "\n"
 
+        # Salvataggio
         with open("README.md", "w", encoding="utf-8") as f: f.write(report)
         with open("data_mappa.json", "w", encoding="utf-8") as j: json.dump(results, j, indent=4)
-        
-        print(f"🚀 Completato! Trovate {len(geometries)} aree totali.")
+        print(f"🚀 Dashboard aggiornata con successo!")
 
 if __name__ == "__main__":
-    SudAlertFinal2026().process()
+    SudAlertFinalMaster().process()
