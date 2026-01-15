@@ -3,9 +3,9 @@ from datetime import datetime
 import json
 import os
 
-class SudAlertInferenceV16:
+class SudAlertV17:
     def __init__(self):
-        # Zone obiettivo
+        # Filtri zone richiesti
         self.targets = {
             "CAMPANIA": ["3", "5", "6", "7", "8"], # Salerno
             "CALABRIA": ["1", "2"],              # Cosenza
@@ -29,30 +29,33 @@ class SudAlertInferenceV16:
         return None, None
 
     def identify_region(self, row):
-        """Innova: Identifica la regione analizzando i nomi dei comuni o i prefissi"""
-        nome_zona = str(row.get("Nome zona", "")).upper()
+        """Innova: Identifica la regione usando province, targhe e parole chiave"""
+        nome_z = str(row.get("Nome zona", "")).upper()
         comuni = str(row.get("Comuni", "")).upper()
         
-        # 1. Check Prefissi espliciti
-        if "CAM" in nome_zona: return "CAMPANIA"
-        if "CAL" in nome_zona: return "CALABRIA"
-        if "BAS" in nome_zona: return "BASILICATA"
+        # 1. Check Prefissi espliciti nel nome zona
+        if any(x in nome_z for x in ["CAM", "CAMPANIA"]): return "CAMPANIA"
+        if any(x in nome_z for x in ["CAL", "CALABRIA"]): return "CALABRIA"
+        if any(x in nome_z for x in ["BAS", "LUCANIA"]): return "BASILICATA"
         
-        # 2. Check per Inferenza Geografica (Cerca città chiave nei comuni)
-        if any(x in comuni for x in ["SALERNO", "NAPOLI", "AVELLINO", "CASERTA", "BENEVENTO"]):
+        # 2. Check Geografico nei Comuni (Province e Targhe)
+        # CAMPANIA
+        if any(x in comuni for x in ["(SA)", "SALERNO", "(NA)", "NAPOLI", "(AV)", "(CE)", "(BN)"]):
             return "CAMPANIA"
-        if any(x in comuni for x in ["COSENZA", "CATANZARO", "REGGIO CALABRIA", "CROTONE", "VIBO"]):
+        # CALABRIA
+        if any(x in comuni for x in ["(CS)", "COSENZA", "(CZ)", "(RC)", "(KR)", "(VV)"]):
             return "CALABRIA"
-        if any(x in comuni for x in ["POTENZA", "MATERA", "MELFI", "POLICORO"]):
+        # BASILICATA
+        if any(x in comuni for x in ["(PZ)", "POTENZA", "(MT)", "MATERA"]):
             return "BASILICATA"
             
         return "UNKNOWN"
 
-    def clean_zone_code(self, raw_code):
+    def clean_zone(self, raw_code):
         c = str(raw_code).upper().strip()
-        for p in ["CAM-", "CAL-", "BASI-", "BAS-", "CAM_", "CAL_", "BASI_"]:
-            c = c.replace(p, "")
-        if c.isdigit(): c = str(int(c))
+        # Rimuove "ZONA ", "CAM-", ecc.
+        c = c.replace("ZONA", "").replace("CAM-", "").replace("CAL-", "").replace("BASI-", "").replace("-", "").strip()
+        if c.isdigit(): c = str(int(c)) # Rimuove zeri (03 -> 3)
         return c
 
     def normalize_status(self, val):
@@ -76,31 +79,29 @@ class SudAlertInferenceV16:
             for item in items:
                 p = item.get("properties", {})
                 
-                # Estrazione Dati
                 raw_zone = str(p.get("Nome zona", "")).upper()
                 raw_crit = str(p.get("Per rischio idrogeologico", "VERDE"))
                 
                 if not raw_zone or raw_zone == "NONE": continue
 
-                # Identificazione Intelligente
                 regione = self.identify_region(p)
-                clean_z = self.clean_zone_code(raw_zone)
+                clean_z = self.clean_zone(raw_zone)
                 crit = self.normalize_status(raw_crit)
 
-                # Filtro e Match
+                # Matching e Filtraggio
                 if regione in self.targets:
-                    if clean_z in self.targets[regione] or regione == "BASILICATA":
+                    if clean_z in self.targets[regione]:
                         results[regione.lower()].append({"zona": clean_z, "crit": crit})
 
         except Exception as e:
             print(f"ERRORE PARSING: {e}")
 
         # Deduplicazione
-        for r in ["campania", "calabria", "basilicata"]:
+        for r in results:
             unique = {z['zona']: z['crit'] for z in results[r]}
             results[r] = [{"zona": k, "crit": v} for k, v in sorted(unique.items())]
 
-        # Metadata per forzare il push
+        # Metadata
         results["metadata"] = {
             "last_run": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
             "source_file": filename
@@ -133,4 +134,4 @@ class SudAlertInferenceV16:
             f.write(report)
 
 if __name__ == "__main__":
-    SudAlertInferenceV16().process()
+    SudAlertV17().process()
