@@ -1,17 +1,18 @@
-# 🌩️ Sistema Vigilanza - Sud Italia
+# 🌩️ Sistema Vigilanza Sud Italia
 
-**Dati aggiornati al:** 15/01/2026 10:11
-**Fonte DPC:** [20220903_1523.json](https://raw.githubusercontent.com/pcm-dpc/DPC-Bollettini-Criticita-Idrogeologica-Idraulica/master/files/20220903_1523.json)
+**Data Report:** 15/01/2026 10:15
+**File Sorgente:** `20260114_1439_tomorrow.json`
+**Zone con Allerta:** ✅ Nessuna
 
-### 📍 Campania (Salerno)
+### 📍 CAMPANIA
 | Stato | Zona | Criticità |
 |---|---|---|
 
-### 📍 Calabria (Cosenza)
+### 📍 CALABRIA
 | Stato | Zona | Criticità |
 |---|---|---|
 
-### 📍 Basilicata (Tutta la Regione)
+### 📍 BASILICATA
 | Stato | Zona | Criticità |
 |---|---|---|
 
