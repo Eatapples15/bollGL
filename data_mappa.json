@@ -1,6 +1,36 @@
 {
-    "campania": [],
-    "calabria": [],
+    "campania": [
+        {
+            "zona": "3",
+            "crit": "VERDE"
+        },
+        {
+            "zona": "5",
+            "crit": "VERDE"
+        },
+        {
+            "zona": "6",
+            "crit": "VERDE"
+        },
+        {
+            "zona": "7",
+            "crit": "VERDE"
+        },
+        {
+            "zona": "8",
+            "crit": "VERDE"
+        }
+    ],
+    "calabria": [
+        {
+            "zona": "1",
+            "crit": "VERDE"
+        },
+        {
+            "zona": "2",
+            "crit": "VERDE"
+        }
+    ],
     "basilicata": [
         {
             "zona": "A1",
@@ -29,16 +59,11 @@
         {
             "zona": "E2",
             "crit": "VERDE"
-        },
-        {
-            "zona": "MARC4",
-            "crit": "VERDE"
         }
     ],
-    "force_metadata": {
-        "timestamp_ns": 1768474120354477664,
-        "update_id": "REF-5799",
-        "last_check": "15/01/2026 10:48:40",
-        "source": "20260114_1439_tomorrow.json"
+    "metadata": {
+        "timestamp": 1768474227447775671,
+        "last_update": "15/01/2026 10:50:27",
+        "file_source": "20260114_1439_tomorrow.json"
     }
 }
