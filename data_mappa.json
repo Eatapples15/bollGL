@@ -1,5 +1,9 @@
 {
     "campania": [],
     "calabria": [],
-    "basilicata": []
+    "basilicata": [],
+    "metadata": {
+        "last_run": "2026-01-15 10:29:59",
+        "source_file": "20260114_1439_tomorrow.json"
+    }
 }
