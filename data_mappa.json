@@ -15,6 +15,58 @@
             "crit": "VERDE"
         },
         {
+            "zona": "BACINO BASSO DEL SANGRO",
+            "crit": "VERDE"
+        },
+        {
+            "zona": "BASSA COLLINA E PIANURA ROMAGNOLA",
+            "crit": "VERDE"
+        },
+        {
+            "zona": "BASSA COLLINA PIACENTINO-PARMENSE",
+            "crit": "VERDE"
+        },
+        {
+            "zona": "BASSA PIANURA CENTRO-OCCIDENTALE",
+            "crit": "VERDE"
+        },
+        {
+            "zona": "BASSA PIANURA CENTRO-ORIENTALE",
+            "crit": "VERDE"
+        },
+        {
+            "zona": "BASSA PIANURA OCCIDENTALE",
+            "crit": "VERDE"
+        },
+        {
+            "zona": "BASSA PIANURA ORIENTALE",
+            "crit": "VERDE"
+        },
+        {
+            "zona": "BASSA VALLE D?AOSTA, DALLA GOLA DI MONTJOVET A PONT-SAINT-MARTIN, VALLE DEL TORRENTE CHALAMY, VALLE D?AYAS, VALLE DI CHAMPORCHER E VALLE DI GRESSONEY",
+            "crit": "VERDE"
+        },
+        {
+            "zona": "BASSO BRENTA-BACCHIGLIONE E FRATTA GORZONE",
+            "crit": "VERDE"
+        },
+        {
+            "zona": "BASSO CILENTO",
+            "crit": "VERDE"
+        },
+        {
+            "zona": "BASSO FORTORE",
+            "crit": "VERDE"
+        },
+        {
+            "zona": "BASSO OFANTO",
+            "crit": "VERDE"
+        },
+        {
+            "zona": "BASSO PIAVE, SILE E BACINO SCOLANTE IN LAGUNA",
+            "crit": "VERDE"
+        },
+        {
             "zona": "C",
             "crit": "VERDE"
         },
@@ -29,10 +81,26 @@
         {
             "zona": "E2",
             "crit": "VERDE"
+        },
+        {
+            "zona": "MARC-4",
+            "crit": "VERDE"
+        },
+        {
+            "zona": "MEDIA-BASSA VALTELLINA",
+            "crit": "VERDE"
+        },
+        {
+            "zona": "PO, FISSERO-TARTARO-CANALBIANCO E BASSO ADIGE",
+            "crit": "VERDE"
+        },
+        {
+            "zona": "TAVOLIERE - BASSI BACINI DEL CANDELARO, CERVARO E CARAPELLE",
+            "crit": "VERDE"
         }
     ],
     "metadata": {
-        "last_run": "2026-01-15 10:33:18",
+        "last_run": "2026-01-15 10:35:01",
         "source_file": "20260114_1439_tomorrow.json"
     }
 }
