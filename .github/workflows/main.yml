@@ -1,24 +1,35 @@
 name: Monitor Sud Italia
 on:
   schedule:
-    - cron: '0 10 * * *'
+    - cron: '0 10 * * *' # Ogni giorno alle 11:00 italiane
   workflow_dispatch:
+
 jobs:
   update:
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Configurazione Python
+        uses: actions/setup-python@v4
         with:
           python-version: '3.9'
-      - run: pip install requests beautifulsoup4
-      - run: python monitor_meteo.py
-      - name: Commit changes
+
+      - name: Installazione dipendenze
+        run: pip install requests beautifulsoup4
+
+      - name: Esecuzione Script
+        run: python monitor_meteo.py
+
+      - name: Commit e Push dei risultati
         run: |
           git config --global user.name "MeteoMapBot"
           git config --global user.email "bot@github.com"
+          # Crea i file se non esistono per evitare l'errore pathspec
+          touch README.md data_mappa.json
           git add README.md data_mappa.json
-          git commit -m "Update dati $(date +'%d-%m-%Y')" || exit 0
-          git push
+          # Commit solo se ci sono cambiamenti effettivi
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update dati bollettino $(date +'%d-%m-%Y')" && git push)
