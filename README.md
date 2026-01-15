@@ -1,20 +1,20 @@
 # 🌩️ Monitoraggio Protezione Civile Sud Italia
 
-**Bollettino Analizzato:** `20260114_1439_tomorrow.json`
-**Data Elaborazione:** 15/01/2026 10:22
+**Bollettino:** `20260114_1439_tomorrow.json`
+**Aggiornamento:** 15/01/2026 10:26
 
-### 📍 CAMPANIA (Prov. Salerno)
+### 📍 CAMPANIA (Salerno)
 | Stato | Zona | Criticità |
 |---|---|---|
-| ⚪ | - | Nessun dato per questa selezione |
+| 🟢 | - | Nessuna allerta |
 
-### 📍 CALABRIA (Prov. Cosenza)
+### 📍 CALABRIA (Cosenza)
 | Stato | Zona | Criticità |
 |---|---|---|
-| ⚪ | - | Nessun dato per questa selezione |
+| 🟢 | - | Nessuna allerta |
 
 ### 📍 BASILICATA
 | Stato | Zona | Criticità |
 |---|---|---|
-| ⚪ | - | Nessun dato per questa selezione |
+| 🟢 | - | Nessuna allerta |
 
