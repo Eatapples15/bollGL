@@ -1,17 +1,17 @@
-# 🌩️ Monitoraggio Protezione Civile Sud Italia
+# 🌩️ Monitoraggio Meteo Sud Italia
 
-**Bollettino analizzato:** `20260114_1439_tomorrow.json`
-**Ultimo controllo:** 15/01/2026 10:36
+**Stato:** AGGIORNATO | **Update ID:** `REF-5799`
+**Ultima verifica:** 15/01/2026 10:48 | **Sorgente:** `20260114_1439_tomorrow.json`
 
 ### 📍 CAMPANIA (Salerno)
 | Stato | Zona | Criticità |
 |---|---|---|
-| 🟢 | - | Nessuna criticità significativa |
+| 🟢 | - | Nessuna allerta significativa |
 
 ### 📍 CALABRIA (Cosenza)
 | Stato | Zona | Criticità |
 |---|---|---|
-| 🟢 | - | Nessuna criticità significativa |
+| 🟢 | - | Nessuna allerta significativa |
 
 ### 📍 BASILICATA
 | Stato | Zona | Criticità |
@@ -23,4 +23,5 @@
 | 🟢 | **D** | VERDE |
 | 🟢 | **E1** | VERDE |
 | 🟢 | **E2** | VERDE |
+| 🟢 | **MARC4** | VERDE |
 

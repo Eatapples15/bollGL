@@ -29,10 +29,16 @@
         {
             "zona": "E2",
             "crit": "VERDE"
+        },
+        {
+            "zona": "MARC4",
+            "crit": "VERDE"
         }
     ],
-    "metadata": {
-        "last_run": "2026-01-15 10:36:57",
-        "source_file": "20260114_1439_tomorrow.json"
+    "force_metadata": {
+        "timestamp_ns": 1768474120354477664,
+        "update_id": "REF-5799",
+        "last_check": "15/01/2026 10:48:40",
+        "source": "20260114_1439_tomorrow.json"
     }
 }
