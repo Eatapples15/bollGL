@@ -3,115 +3,121 @@ from datetime import datetime, timedelta
 import json
 import os
 
-class SouthAlertHubFinal:
+class SudAlertPro:
     def __init__(self):
-        # CONFIGURAZIONE ZONE RICHIESTE
-        # Campania: Solo Salerno
-        self.target_campania = ["3", "5", "6", "7", "8"]
-        # Calabria: Solo Cosenza (Zone 1 e 2)
-        self.target_calabria = ["1", "2"]
-        # Basilicata: Tutte le zone
-        self.target_basilicata = ["A1", "A2", "B", "C", "D", "E1", "E2"]
+        # Mappatura Zone (Provincia di Salerno)
+        self.salerno_zones = ["3", "5", "6", "7", "8"]
+        # Mappatura Zone (Provincia di Cosenza)
+        self.cosenza_zones = ["1", "2"]
+        # Mappatura Zone (Basilicata)
+        self.basilicata_zones = ["A1", "A2", "B", "C", "D", "E1", "E2"]
 
-        # Parametri Repository
+        # URL Repository Criticità
         self.repo_api = "https://api.github.com/repos/pcm-dpc/DPC-Bollettini-Criticita-Idrogeologica-Idraulica/commits?path=files&per_page=5"
-        self.base_raw_url = "https://raw.githubusercontent.com/pcm-dpc/DPC-Bollettini-Criticita-Idrogeologica-Idraulica/master/files/"
 
-    def get_latest_data(self):
-        """Trova l'ultimo bollettino disponibile tramite Git Commits o Date-Guessing"""
-        print(f"[{datetime.now().strftime('%H:%M')}] Avvio ricerca bollettino...")
-        
-        # 1. Tentativo tramite API Commits (per file recenti su master/main)
+    def get_latest_json(self):
+        """Trova l'ultimo bollettino (Oggi o Tomorrow) tramite API Commits"""
+        print(f"[{datetime.now().strftime('%H:%M')}] Ricerca bollettino nei repository DPC...")
         try:
-            res = requests.get(self.repo_api, timeout=10)
-            if res.status_code == 200:
-                commits = res.json()
-                for commit in commits:
-                    detail = requests.get(commit['url']).json()
-                    for f in detail.get('files', []):
-                        fname = f['filename'].split('/')[-1]
-                        if fname.endswith('.json') and fname.startswith('202'):
-                            print(f"✅ Bollettino trovato: {fname}")
-                            return requests.get(f['raw_url']).json(), fname
+            res = requests.get(self.repo_api, timeout=15)
+            commits = res.json()
+            for commit in commits:
+                detail = requests.get(commit['url']).json()
+                for f in detail.get('files', []):
+                    fname = f['filename'].split('/')[-1]
+                    # Cerchiamo file JSON recenti (2025/2026)
+                    if fname.endswith('.json') and ("2025" in fname or "2026" in fname):
+                        print(f"✅ File individuato: {fname}")
+                        return requests.get(f['raw_url']).json(), fname
         except Exception as e:
-            print(f"⚠️ Errore API: {e}")
-
-        # 2. Fallback Predittivo (Oggi/Ieri)
-        for d in [0, 1]:
-            date_str = (datetime.now() - timedelta(days=d)).strftime("%Y%m%d")
-            for hhmm in ["1430", "1500", "1530", "1600"]:
-                url = f"{self.base_raw_url}{date_str}_{hhmm}.json"
-                r = requests.get(url)
-                if r.status_code == 200:
-                    print(f"✅ Bollettino trovato (Predictive): {date_str}_{hhmm}.json")
-                    return r.json(), f"{date_str}_{hhmm}.json"
-        
+            print(f"❌ Errore ricerca: {e}")
         return None, None
 
-    def normalize_code(self, raw_code):
-        """Converte CAM-03 in 3, BASI-A1 in A1, etc."""
-        if "-" in raw_code:
-            code = raw_code.split("-")[1]
-            # Rimuove lo zero iniziale se presente (es. 03 -> 3) ma non da A1
-            if code.isdigit():
-                return str(int(code))
-            return code.upper()
-        return raw_code.upper()
+    def parse_zone_code(self, raw_code):
+        """
+        Pulisce il codice (es: 'CAM-03' -> '3', 'BASI-A1' -> 'A1')
+        Restituisce (regione, codice_pulito)
+        """
+        code = str(raw_code).upper().strip()
+        regione = "UNKNOWN"
+        
+        if "CAM" in code: regione = "CAMPANIA"
+        elif "CAL" in code: regione = "CALABRIA"
+        elif "BASI" in code: regione = "BASILICATA"
+        
+        # Estrae la parte dopo il trattino o prende tutto se manca
+        clean_code = code.split("-")[-1] if "-" in code else code
+        # Rimuove zeri iniziali per i numeri (es. 03 -> 3)
+        if clean_code.isdigit():
+            clean_code = str(int(clean_code))
+            
+        return regione, clean_code
 
     def get_emoji(self, crit):
         mapping = {"VERDE": "🟢", "GIALLA": "🟡", "ARANCIONE": "🟠", "ROSSA": "🔴"}
         return mapping.get(str(crit).upper(), "⚪")
 
     def process(self):
-        data, filename = self.get_latest_data()
+        data, filename = self.get_latest_json()
         if not data:
-            print("❌ Impossibile recuperare i dati.")
+            print("❌ Nessun dato recuperato.")
             return
 
+        # Dizionario finale per data_mappa.json
         results = {"campania": [], "calabria": [], "basilicata": []}
         
-        # Estrazione e filtraggio
-        for area in data.get("allerte", []):
-            raw_code = str(area.get("codice", "")).upper()
+        # Estrazione dati dalle 'allerte'
+        allerte = data.get("allerte", [])
+        print(f"Analisi di {len(allerte)} aree nel bollettino...")
+
+        for area in allerte:
+            raw_c = area.get("codice", "")
             crit = area.get("criticita_idrogeologica", "VERDE").upper()
-            clean_z = self.normalize_code(raw_code)
-
-            # Match CAMPANIA (Salerno)
-            if "CAM-" in raw_code and clean_z in self.target_campania:
-                results["campania"].append({"zona": clean_z, "crit": crit})
             
-            # Match CALABRIA (Cosenza)
-            elif "CAL-" in raw_code and clean_z in self.target_calabria:
-                results["calabria"].append({"zona": clean_z, "crit": crit})
+            reg, code = self.parse_zone_code(raw_c)
+
+            # --- LOGICA FILTRAGGIO SALERNO ---
+            if reg == "CAMPANIA" and code in self.salerno_zones:
+                results["campania"].append({"zona": code, "crit": crit})
             
-            # Match BASILICATA (Tutte)
-            elif "BASI-" in raw_code:
-                results["basilicata"].append({"zona": clean_z, "crit": crit})
+            # --- LOGICA FILTRAGGIO COSENZA ---
+            elif reg == "CALABRIA" and code in self.cosenza_zones:
+                results["calabria"].append({"zona": code, "crit": crit})
+            
+            # --- LOGICA BASILICATA (TUTTE) ---
+            elif reg == "BASILICATA":
+                results["basilicata"].append({"zona": code, "crit": crit})
 
-        # Generazione README Dashboard
-        report = f"# 🌩️ Dashboard Monitoraggio Sud Italia\n\n"
-        report += f"**Aggiornamento:** {datetime.now().strftime('%d/%m/%Y %H:%M')}\n"
-        report += f"**Sorgente:** `{filename}`\n\n"
+        # --- GENERAZIONE REPORT README ---
+        report = f"# 🌩️ Monitoraggio Protezione Civile Sud Italia\n\n"
+        report += f"**Bollettino Analizzato:** `{filename}`\n"
+        report += f"**Data Elaborazione:** {datetime.now().strftime('%d/%m/%Y %H:%M')}\n\n"
 
-        for reg in ["campania", "calabria", "basilicata"]:
-            label = "CAMPANIA (Salerno)" if reg == "campania" else "CALABRIA (Cosenza)" if reg == "calabria" else "BASILICATA"
+        for r_name in ["campania", "calabria", "basilicata"]:
+            label = r_name.upper()
+            if r_name == "campania": label += " (Prov. Salerno)"
+            if r_name == "calabria": label += " (Prov. Cosenza)"
+            
             report += f"### 📍 {label}\n"
             report += "| Stato | Zona | Criticità |\n|---|---|---|\n"
-            if not results[reg]:
-                report += "| ⚪ | - | Nessun dato trovato |\n"
+            
+            if not results[r_name]:
+                report += "| ⚪ | - | Nessun dato per questa selezione |\n"
             else:
-                for item in sorted(results[reg], key=lambda x: x['zona']):
+                # Ordina per zona per chiarezza
+                sorted_zones = sorted(results[r_name], key=lambda x: x['zona'])
+                for item in sorted_zones:
                     report += f"| {self.get_emoji(item['crit'])} | **{item['zona']}** | {item['crit']} |\n"
             report += "\n"
 
-        # Scrittura File
+        # --- SALVATAGGIO FILE ---
         with open("README.md", "w", encoding="utf-8") as f:
             f.write(report)
         
         with open("data_mappa.json", "w", encoding="utf-8") as j:
             json.dump(results, j, indent=4)
-        
-        print(f"🚀 Successo! Campania: {len(results['campania'])}, Calabria: {len(results['calabria'])}, Basilicata: {len(results['basilicata'])}")
+
+        print(f"🚀 Fine. Trovati: SA:{len(results['campania'])} | CS:{len(results['calabria'])} | BASI:{len(results['basilicata'])}")
 
 if __name__ == "__main__":
-    SouthAlertHubFinal().process()
+    SudAlertPro().process()
