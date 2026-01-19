@@ -38,7 +38,7 @@
         },
         {
             "zona": "A2",
-            "crit": "VERDE"
+            "crit": "GIALLA"
         },
         {
             "zona": "B",
@@ -46,11 +46,11 @@
         },
         {
             "zona": "C",
-            "crit": "VERDE"
+            "crit": "GIALLA"
         },
         {
             "zona": "D",
-            "crit": "VERDE"
+            "crit": "GIALLA"
         },
         {
             "zona": "E1",
@@ -62,8 +62,8 @@
         }
     ],
     "metadata": {
-        "timestamp": 1768732072977024301,
-        "last_update": "18/01/2026 10:27:52",
-        "file_source": "20260117_1452_tomorrow.json"
+        "timestamp": 1768818994550844484,
+        "last_update": "19/01/2026 10:36:34",
+        "file_source": "20260118_1824_tomorrow.json"
     }
 }
