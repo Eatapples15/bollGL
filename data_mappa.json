@@ -34,7 +34,7 @@
     "basilicata": [
         {
             "zona": "A1",
-            "crit": "VERDE"
+            "crit": "GIALLA"
         },
         {
             "zona": "A2",
@@ -42,7 +42,7 @@
         },
         {
             "zona": "B",
-            "crit": "VERDE"
+            "crit": "GIALLA"
         },
         {
             "zona": "C",
@@ -62,8 +62,8 @@
         }
     ],
     "metadata": {
-        "timestamp": 1768905360618476635,
-        "last_update": "20/01/2026 10:36:00",
-        "file_source": "20260119_1455_tomorrow.json"
+        "timestamp": 1768991806703522123,
+        "last_update": "21/01/2026 10:36:46",
+        "file_source": "20260120_1521_tomorrow.json"
     }
 }
