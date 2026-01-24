@@ -2,11 +2,11 @@
     "campania": [
         {
             "zona": "3",
-            "crit": "VERDE"
+            "crit": "GIALLA"
         },
         {
             "zona": "5",
-            "crit": "VERDE"
+            "crit": "GIALLA"
         },
         {
             "zona": "6",
@@ -62,8 +62,8 @@
         }
     ],
     "metadata": {
-        "timestamp": 1769164365276329252,
-        "last_update": "23/01/2026 10:32:45",
-        "file_source": "20260122_1436_tomorrow.json"
+        "timestamp": 1769250493789222523,
+        "last_update": "24/01/2026 10:28:13",
+        "file_source": "20260123_1436_tomorrow.json"
     }
 }
