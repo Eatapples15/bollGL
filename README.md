@@ -1,31 +1,31 @@
 # 🌩️ Monitoraggio Sud Italia
 
-**Ultimo Aggiornamento:** 03/02/2026 10:50
-**File Analizzato:** `20260202_1535_tomorrow.json`
+**Ultimo Aggiornamento:** 04/02/2026 10:49
+**File Analizzato:** `20260203_1510_tomorrow.json`
 
 ### 📍 CAMPANIA (Salerno)
 | Stato | Zona | Allerta |
 |---|---|---|
-| 🟢 | **3** | VERDE |
-| 🟢 | **5** | VERDE |
-| 🟢 | **6** | VERDE |
+| 🟡 | **3** | GIALLA |
+| 🟡 | **5** | GIALLA |
+| 🟡 | **6** | GIALLA |
 | 🟢 | **7** | VERDE |
-| 🟢 | **8** | VERDE |
+| 🟡 | **8** | GIALLA |
 
 ### 📍 CALABRIA (Cosenza)
 | Stato | Zona | Allerta |
 |---|---|---|
-| 🟢 | **1** | VERDE |
-| 🟢 | **2** | VERDE |
+| 🟡 | **1** | GIALLA |
+| 🟡 | **2** | GIALLA |
 
 ### 📍 BASILICATA
 | Stato | Zona | Allerta |
 |---|---|---|
-| 🟢 | **A1** | VERDE |
-| 🟢 | **A2** | VERDE |
-| 🟢 | **B** | VERDE |
-| 🟢 | **C** | VERDE |
-| 🟢 | **D** | VERDE |
-| 🟢 | **E1** | VERDE |
-| 🟢 | **E2** | VERDE |
+| 🟡 | **A1** | GIALLA |
+| 🟡 | **A2** | GIALLA |
+| 🟡 | **B** | GIALLA |
+| 🟡 | **C** | GIALLA |
+| 🟡 | **D** | GIALLA |
+| 🟡 | **E1** | GIALLA |
+| 🟡 | **E2** | GIALLA |
 
