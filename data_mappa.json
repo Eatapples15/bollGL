@@ -2,7 +2,7 @@
     "campania": [
         {
             "zona": "3",
-            "crit": "ARANCIONE"
+            "crit": "GIALLA"
         },
         {
             "zona": "5",
@@ -62,8 +62,8 @@
         }
     ],
     "metadata": {
-        "timestamp": 1771065255416681609,
-        "last_update": "14/02/2026 10:34:15",
-        "file_source": "20260213_1539_tomorrow.json"
+        "timestamp": 1771151653726968370,
+        "last_update": "15/02/2026 10:34:13",
+        "file_source": "20260214_1429_tomorrow.json"
     }
 }
