@@ -34,36 +34,36 @@
     "basilicata": [
         {
             "zona": "A1",
-            "crit": "GIALLA"
+            "crit": "VERDE"
         },
         {
             "zona": "A2",
-            "crit": "GIALLA"
+            "crit": "VERDE"
         },
         {
             "zona": "B",
-            "crit": "GIALLA"
+            "crit": "VERDE"
         },
         {
             "zona": "C",
-            "crit": "GIALLA"
+            "crit": "VERDE"
         },
         {
             "zona": "D",
-            "crit": "GIALLA"
+            "crit": "VERDE"
         },
         {
             "zona": "E1",
-            "crit": "GIALLA"
+            "crit": "VERDE"
         },
         {
             "zona": "E2",
-            "crit": "GIALLA"
+            "crit": "VERDE"
         }
     ],
     "metadata": {
-        "timestamp": 1772965939012584487,
-        "last_update": "08/03/2026 10:32:19",
-        "file_source": "20260307_1414_tomorrow.json"
+        "timestamp": 1773053569594640366,
+        "last_update": "09/03/2026 10:52:49",
+        "file_source": "20260308_1410_tomorrow.json"
     }
 }
