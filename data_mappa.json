@@ -24,11 +24,11 @@
     "calabria": [
         {
             "zona": "1",
-            "crit": "GIALLA"
+            "crit": "VERDE"
         },
         {
             "zona": "2",
-            "crit": "GIALLA"
+            "crit": "VERDE"
         }
     ],
     "basilicata": [
@@ -62,8 +62,8 @@
         }
     ],
     "metadata": {
-        "timestamp": 1773831445925540986,
-        "last_update": "18/03/2026 10:57:25",
-        "file_source": "20260317_1508_tomorrow.json"
+        "timestamp": 1773917455578788063,
+        "last_update": "19/03/2026 10:50:55",
+        "file_source": "20260318_1516_tomorrow.json"
     }
 }
