@@ -58,12 +58,12 @@
         },
         {
             "zona": "E2",
-            "crit": "VERDE"
+            "crit": "GIALLA"
         }
     ],
     "metadata": {
-        "timestamp": 1774089288233456410,
-        "last_update": "21/03/2026 10:34:48",
-        "file_source": "20260320_1437_tomorrow.json"
+        "timestamp": 1774175701509453481,
+        "last_update": "22/03/2026 10:35:01",
+        "file_source": "20260321_1418_tomorrow.json"
     }
 }
