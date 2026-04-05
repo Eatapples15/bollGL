@@ -34,19 +34,19 @@
     "basilicata": [
         {
             "zona": "A1",
-            "crit": "ARANCIONE"
-        },
-        {
-            "zona": "A2",
             "crit": "GIALLA"
         },
         {
+            "zona": "A2",
+            "crit": "VERDE"
+        },
+        {
             "zona": "B",
-            "crit": "ARANCIONE"
+            "crit": "GIALLA"
         },
         {
             "zona": "C",
-            "crit": "ARANCIONE"
+            "crit": "GIALLA"
         },
         {
             "zona": "D",
@@ -54,16 +54,16 @@
         },
         {
             "zona": "E1",
-            "crit": "ARANCIONE"
+            "crit": "GIALLA"
         },
         {
             "zona": "E2",
-            "crit": "ARANCIONE"
+            "crit": "GIALLA"
         }
     ],
     "metadata": {
-        "timestamp": 1775299252539047280,
-        "last_update": "04/04/2026 10:40:52",
-        "file_source": "20260403_1501_tomorrow.json"
+        "timestamp": 1775385720703844950,
+        "last_update": "05/04/2026 10:42:00",
+        "file_source": "20260404_1423_tomorrow.json"
     }
 }
