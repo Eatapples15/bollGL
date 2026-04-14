@@ -1,16 +1,16 @@
 # 🌩️ Monitoraggio Sud Italia
 
-**Ultimo Aggiornamento:** 13/04/2026 11:21
-**File Analizzato:** `20260412_1458_tomorrow.json`
+**Ultimo Aggiornamento:** 14/04/2026 11:09
+**File Analizzato:** `20260413_1423_tomorrow.json`
 
 ### 📍 CAMPANIA (Salerno)
 | Stato | Zona | Allerta |
 |---|---|---|
 | 🟢 | **3** | VERDE |
-| 🟢 | **5** | VERDE |
-| 🟢 | **6** | VERDE |
-| 🟢 | **7** | VERDE |
-| 🟢 | **8** | VERDE |
+| 🟡 | **5** | GIALLA |
+| 🟡 | **6** | GIALLA |
+| 🟡 | **7** | GIALLA |
+| 🟡 | **8** | GIALLA |
 
 ### 📍 CALABRIA (Cosenza)
 | Stato | Zona | Allerta |
@@ -21,9 +21,9 @@
 ### 📍 BASILICATA
 | Stato | Zona | Allerta |
 |---|---|---|
-| 🟢 | **A1** | VERDE |
+| 🟡 | **A1** | GIALLA |
 | 🟢 | **A2** | VERDE |
-| 🟢 | **B** | VERDE |
+| 🟡 | **B** | GIALLA |
 | 🟢 | **C** | VERDE |
 | 🟢 | **D** | VERDE |
 | 🟢 | **E1** | VERDE |
