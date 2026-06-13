@@ -1,6 +1,6 @@
 # 🌩️ Monitoraggio Sud Italia
 
-**Ultimo Aggiornamento:** 12/06/2026 13:31
+**Ultimo Aggiornamento:** 13/06/2026 11:56
 **File Analizzato:** `20260612_1403_tomorrow.json`
 
 ### 📍 CAMPANIA (Salerno)
