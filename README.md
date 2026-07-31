@@ -1,7 +1,7 @@
 # 🌩️ Monitoraggio Sud Italia
 
-**Ultimo Aggiornamento:** 30/07/2026 11:55
-**File Analizzato:** `20260729_1410_tomorrow.json`
+**Ultimo Aggiornamento:** 31/07/2026 12:04
+**File Analizzato:** `20260730_1511_tomorrow.json`
 
 ### 📍 CAMPANIA (Salerno)
 | Stato | Zona | Allerta |
