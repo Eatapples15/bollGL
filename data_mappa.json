@@ -24,46 +24,46 @@
     "calabria": [
         {
             "zona": "1",
-            "crit": "VERDE"
+            "crit": "GIALLA"
         },
         {
             "zona": "2",
-            "crit": "VERDE"
+            "crit": "GIALLA"
         }
     ],
     "basilicata": [
         {
             "zona": "A1",
-            "crit": "VERDE"
+            "crit": "GIALLA"
         },
         {
             "zona": "A2",
-            "crit": "VERDE"
+            "crit": "GIALLA"
         },
         {
             "zona": "B",
-            "crit": "VERDE"
+            "crit": "GIALLA"
         },
         {
             "zona": "C",
-            "crit": "VERDE"
+            "crit": "GIALLA"
         },
         {
             "zona": "D",
-            "crit": "VERDE"
+            "crit": "GIALLA"
         },
         {
             "zona": "E1",
-            "crit": "VERDE"
+            "crit": "GIALLA"
         },
         {
             "zona": "E2",
-            "crit": "VERDE"
+            "crit": "GIALLA"
         }
     ],
     "metadata": {
-        "timestamp": 1788197368575382935,
-        "last_update": "31/08/2026 17:29:28",
-        "file_source": "20260831_1416_tomorrow.json"
+        "timestamp": 1788273575063995318,
+        "last_update": "01/09/2026 14:39:35",
+        "file_source": "20260901_1515_tomorrow.json"
     }
 }
