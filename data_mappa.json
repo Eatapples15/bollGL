@@ -2,23 +2,23 @@
     "campania": [
         {
             "zona": "3",
-            "crit": "VERDE"
+            "crit": "GIALLA"
         },
         {
             "zona": "5",
-            "crit": "VERDE"
+            "crit": "GIALLA"
         },
         {
             "zona": "6",
-            "crit": "VERDE"
+            "crit": "GIALLA"
         },
         {
             "zona": "7",
-            "crit": "VERDE"
+            "crit": "GIALLA"
         },
         {
             "zona": "8",
-            "crit": "VERDE"
+            "crit": "GIALLA"
         }
     ],
     "calabria": [
@@ -62,8 +62,8 @@
         }
     ],
     "metadata": {
-        "timestamp": 1788963517040381012,
-        "last_update": "09/09/2026 14:18:37",
-        "file_source": "20260909_1546_tomorrow.json"
+        "timestamp": 1789049529817488300,
+        "last_update": "10/09/2026 14:12:09",
+        "file_source": "20260910_1507_tomorrow.json"
     }
 }
