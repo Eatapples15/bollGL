@@ -2,7 +2,7 @@
     "campania": [
         {
             "zona": "3",
-            "crit": "VERDE"
+            "crit": "GIALLA"
         },
         {
             "zona": "5",
@@ -34,7 +34,7 @@
     "basilicata": [
         {
             "zona": "A1",
-            "crit": "VERDE"
+            "crit": "GIALLA"
         },
         {
             "zona": "A2",
@@ -62,8 +62,8 @@
         }
     ],
     "metadata": {
-        "timestamp": 1789569882075057839,
-        "last_update": "16/09/2026 14:44:42",
-        "file_source": "20260916_1522_tomorrow.json"
+        "timestamp": 1789656491888543632,
+        "last_update": "17/09/2026 14:48:11",
+        "file_source": "20260917_1435_tomorrow.json"
     }
 }
