@@ -1,12 +1,12 @@
 # 🌩️ Monitoraggio Sud Italia
 
-**Ultimo Aggiornamento:** 09/10/2026 16:54
-**File Analizzato:** `20261009_1615_tomorrow.json`
+**Ultimo Aggiornamento:** 10/10/2026 15:47
+**File Analizzato:** `20261010_1417_tomorrow.json`
 
 ### 📍 CAMPANIA (Salerno)
 | Stato | Zona | Allerta |
 |---|---|---|
-| 🟠 | **3** | ARANCIONE |
+| 🟡 | **3** | GIALLA |
 | 🟡 | **5** | GIALLA |
 | 🟡 | **6** | GIALLA |
 | 🟡 | **7** | GIALLA |
@@ -15,17 +15,17 @@
 ### 📍 CALABRIA (Cosenza)
 | Stato | Zona | Allerta |
 |---|---|---|
-| 🟠 | **1** | ARANCIONE |
-| 🟠 | **2** | ARANCIONE |
+| 🟡 | **1** | GIALLA |
+| 🟡 | **2** | GIALLA |
 
 ### 📍 BASILICATA
 | Stato | Zona | Allerta |
 |---|---|---|
-| 🟡 | **A1** | GIALLA |
-| 🟡 | **A2** | GIALLA |
-| 🟡 | **B** | GIALLA |
-| 🟡 | **C** | GIALLA |
-| 🟡 | **D** | GIALLA |
-| 🟡 | **E1** | GIALLA |
-| 🟡 | **E2** | GIALLA |
+| 🟢 | **A1** | VERDE |
+| 🟢 | **A2** | VERDE |
+| 🟢 | **B** | VERDE |
+| 🟢 | **C** | VERDE |
+| 🟢 | **D** | VERDE |
+| 🟢 | **E1** | VERDE |
+| 🟢 | **E2** | VERDE |
 
