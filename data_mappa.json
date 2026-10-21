@@ -2,7 +2,7 @@
     "campania": [
         {
             "zona": "3",
-            "crit": "ARANCIONE"
+            "crit": "GIALLA"
         },
         {
             "zona": "5",
@@ -24,46 +24,46 @@
     "calabria": [
         {
             "zona": "1",
-            "crit": "GIALLA"
+            "crit": "VERDE"
         },
         {
             "zona": "2",
-            "crit": "GIALLA"
+            "crit": "VERDE"
         }
     ],
     "basilicata": [
         {
             "zona": "A1",
-            "crit": "GIALLA"
+            "crit": "VERDE"
         },
         {
             "zona": "A2",
-            "crit": "GIALLA"
+            "crit": "VERDE"
         },
         {
             "zona": "B",
-            "crit": "GIALLA"
+            "crit": "VERDE"
         },
         {
             "zona": "C",
-            "crit": "GIALLA"
+            "crit": "VERDE"
         },
         {
             "zona": "D",
-            "crit": "GIALLA"
+            "crit": "VERDE"
         },
         {
             "zona": "E1",
-            "crit": "GIALLA"
+            "crit": "VERDE"
         },
         {
             "zona": "E2",
-            "crit": "GIALLA"
+            "crit": "VERDE"
         }
     ],
     "metadata": {
-        "timestamp": 1792507933457926684,
-        "last_update": "20/10/2026 14:52:13",
-        "file_source": "20261020_1521_tomorrow.json"
+        "timestamp": 1792594749286936197,
+        "last_update": "21/10/2026 14:59:09",
+        "file_source": "20261021_1436_tomorrow.json"
     }
 }
