@@ -1,16 +1,16 @@
 # 🌩️ Monitoraggio Sud Italia
 
-**Ultimo Aggiornamento:** 31/10/2026 15:40
-**File Analizzato:** `20261031_1420_tomorrow.json`
+**Ultimo Aggiornamento:** 01/11/2026 16:41
+**File Analizzato:** `20261101_1455_tomorrow.json`
 
 ### 📍 CAMPANIA (Salerno)
 | Stato | Zona | Allerta |
 |---|---|---|
-| 🟢 | **3** | VERDE |
-| 🟢 | **5** | VERDE |
-| 🟢 | **6** | VERDE |
-| 🟢 | **7** | VERDE |
-| 🟢 | **8** | VERDE |
+| 🟡 | **3** | GIALLA |
+| 🟡 | **5** | GIALLA |
+| 🟡 | **6** | GIALLA |
+| 🟡 | **7** | GIALLA |
+| 🟡 | **8** | GIALLA |
 
 ### 📍 CALABRIA (Cosenza)
 | Stato | Zona | Allerta |
@@ -21,11 +21,11 @@
 ### 📍 BASILICATA
 | Stato | Zona | Allerta |
 |---|---|---|
-| 🟢 | **A1** | VERDE |
-| 🟡 | **A2** | GIALLA |
-| 🟢 | **B** | VERDE |
-| 🟡 | **C** | GIALLA |
-| 🟡 | **D** | GIALLA |
-| 🟢 | **E1** | VERDE |
-| 🟢 | **E2** | VERDE |
+| 🟠 | **A1** | ARANCIONE |
+| 🟠 | **A2** | ARANCIONE |
+| 🟠 | **B** | ARANCIONE |
+| 🟠 | **C** | ARANCIONE |
+| 🟠 | **D** | ARANCIONE |
+| 🟠 | **E1** | ARANCIONE |
+| 🟠 | **E2** | ARANCIONE |
 
